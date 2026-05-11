@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { USERS, type UserProfile } from "./users";
+import type { UserProfile } from "./types";
+import { useUsers } from "./useUsers";
 
 export type RoleSwitcherProps = {
   open: boolean;
@@ -12,12 +13,15 @@ export type RoleSwitcherProps = {
 
 export function RoleSwitcher({
   open,
-  users = USERS,
+  users: usersProp,
   currentUserId,
   title = "切换角色",
   onSelect,
   onClose,
 }: RoleSwitcherProps) {
+  const { users: fetchedUsers } = useUsers();
+  const users = usersProp ?? fetchedUsers;
+
   useEffect(() => {
     if (!open) return;
     const handler = (event: KeyboardEvent) => {

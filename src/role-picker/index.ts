@@ -1,10 +1,12 @@
 export { useUser } from "./useUser";
-export type { UseUserOptions, UseUserResult } from "./useUser";
+export type { UseUserResult } from "./useUser";
+export { useUsers } from "./useUsers";
+export type { UseUsersResult } from "./useUsers";
 export { RolePicker } from "./RolePicker";
 export type { RolePickerProps } from "./RolePicker";
 export { RoleSwitcher } from "./RoleSwitcher";
 export type { RoleSwitcherProps } from "./RoleSwitcher";
 export { RoleAvatar } from "./RoleAvatar";
 export type { RoleAvatarProps } from "./RoleAvatar";
-export { USERS } from "./users";
-export type { UserProfile } from "./users";
+export { configureWebShared, getWebSharedConfig, fetchUsers } from "./config";
+export type { UserProfile } from "./types";

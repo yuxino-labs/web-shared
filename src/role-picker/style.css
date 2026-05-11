@@ -48,6 +48,18 @@
   display: none;
 }
 
+.role-picker-loading,
+.role-picker-error {
+  font-size: 0.95rem;
+  color: #6b7280;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.role-picker-error {
+  color: #b91c1c;
+}
+
 .role-picker-card {
   display: flex;
   flex-direction: column;

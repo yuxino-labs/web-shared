@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { USERS, type UserProfile } from "./users";
+import type { UserProfile } from "./types";
+import { useUsers } from "./useUsers";
 
 const COOKIE_NAME = "nichijou_current_user";
 const LEGACY_LOCAL_STORAGE_KEY = "nichijou_current_user";
@@ -34,37 +35,25 @@ function setCookie(name: string, value: string) {
   ].join("; ");
 }
 
-function isValidUserId(userId: string, users: UserProfile[]) {
-  return users.some((user) => user.id === userId);
-}
-
-export type UseUserOptions = {
-  users?: UserProfile[];
-};
-
 export type UseUserResult = {
   userId: string;
-  currentUser: UserProfile;
+  currentUser: UserProfile | null;
   hasSelectedUser: boolean;
+  loading: boolean;
+  error: Error | null;
+  users: UserProfile[];
   switchUser: (nextUserId: string) => void;
 };
 
-export function useUser(options: UseUserOptions = {}): UseUserResult {
-  const users = options.users ?? USERS;
+export function useUser(): UseUserResult {
+  const { users, loading, error } = useUsers();
 
   const [userId, setUserId] = useState<string>(() => {
     const cookieValue = getCookie(COOKIE_NAME);
-    if (cookieValue && isValidUserId(cookieValue, users)) {
-      return cookieValue;
-    }
-
+    if (cookieValue) return cookieValue;
     if (typeof localStorage !== "undefined") {
-      const stored = localStorage.getItem(LEGACY_LOCAL_STORAGE_KEY) || "";
-      if (stored && isValidUserId(stored, users)) {
-        return stored;
-      }
+      return localStorage.getItem(LEGACY_LOCAL_STORAGE_KEY) || "";
     }
-
     return "";
   });
 
@@ -76,12 +65,16 @@ export function useUser(options: UseUserOptions = {}): UseUserResult {
     }
   }, [userId]);
 
-  const currentUser = users.find((user) => user.id === userId) || users[0];
+  const userIsValid = users.some((user) => user.id === userId);
+  const currentUser = userIsValid ? users.find((u) => u.id === userId)! : null;
 
   return {
-    userId,
+    userId: userIsValid ? userId : "",
     currentUser,
-    hasSelectedUser: Boolean(userId),
+    hasSelectedUser: userIsValid,
+    loading,
+    error,
+    users,
     switchUser: setUserId,
   };
 }

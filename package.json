@@ -1,6 +1,6 @@
 {
   "name": "web-shared",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": false,
   "description": "Shared web components & hooks across yuxino projects (ele, nichijou, ...)",
   "type": "module",

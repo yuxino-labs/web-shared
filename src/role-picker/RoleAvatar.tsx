@@ -1,4 +1,5 @@
-import type { UserProfile } from "./users";
+import type { CSSProperties } from "react";
+import type { UserProfile } from "./types";
 
 export type RoleAvatarProps = {
   user: UserProfile;
@@ -15,7 +16,7 @@ export function RoleAvatar({ user, size = 36, showName = false, onClick, title }
     <Tag
       {...props}
       className={`role-avatar ${onClick ? "clickable" : ""}`}
-      style={{ "--role-avatar-size": `${size}px` } as React.CSSProperties}
+      style={{ "--role-avatar-size": `${size}px` } as CSSProperties}
       title={title ?? user.name}
       aria-label={user.name}
     >
