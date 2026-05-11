@@ -1,0 +1,42 @@
+{
+  "name": "web-shared",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Shared web components & hooks across yuxino projects (ele, nichijou, ...)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/copy-assets.mjs",
+    "clean": "rm -rf dist",
+    "prepare": "npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "~5.9.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuxino-labs/web-shared.git"
+  },
+  "author": "yuxino <nbsawz@gmail.com>",
+  "license": "MIT"
+}
