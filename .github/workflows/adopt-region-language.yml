@@ -1,0 +1,38 @@
+name: Adopt shared language policy
+on:
+  workflow_call:
+    inputs:
+      shared-ref:
+        description: Immutable web-shared commit
+        required: true
+        type: string
+permissions:
+  contents: write
+jobs:
+  validate-and-adopt:
+    if: startsWith(github.ref, 'refs/heads/chore/shared-language-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: consumer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.ref }}
+          path: consumer
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+      - name: Read the pinned shared implementation and migration script
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: yuxino-labs/web-shared
+          ref: ${{ inputs.shared-ref }}
+          path: shared
+          persist-credentials: false
+      - name: Install, test and build before committing the migration
+        env:
+          SHARED_LANGUAGE_REF: ${{ inputs.shared-ref }}
+          SHARED_LANGUAGE_BRANCH: ${{ github.ref_name }}
+        run: node ../shared/scripts/adopt-region-language.mjs

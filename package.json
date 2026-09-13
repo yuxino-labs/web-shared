@@ -1,42 +1,33 @@
 {
   "name": "web-shared",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": false,
-  "description": "Shared web components & hooks across yuxino projects (ele, nichijou, ...)",
+  "description": "Shared web components, hooks and English-first IP-country language policy for yuxino projects",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./style.css": "./dist/style.css"
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./style.css": "./dist/style.css",
+    "./region-language": {
+      "types": "./src/region-language.ts",
+      "import": "./runtime/region-language.js",
+      "default": "./runtime/region-language.js"
+    }
   },
-  "files": [
-    "dist",
-    "src",
-    "README.md"
-  ],
+  "files": ["dist", "src", "runtime", "README.md", "docs/language-policy.md"],
   "scripts": {
-    "build": "tsc -p tsconfig.json && node scripts/copy-assets.mjs",
+    "build": "tsc -p tsconfig.json && node scripts/copy-assets.mjs && node scripts/build-region-runtime.mjs",
+    "build:language": "node scripts/build-region-runtime.mjs",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "clean": "rm -rf dist",
     "prepare": "npm run build"
   },
-  "peerDependencies": {
-    "react": ">=18",
-    "react-dom": ">=18"
-  },
-  "devDependencies": {
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "typescript": "~5.9.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yuxino-labs/web-shared.git"
-  },
+  "peerDependencies": { "react": ">=18", "react-dom": ">=18" },
+  "peerDependenciesMeta": { "react": { "optional": true }, "react-dom": { "optional": true } },
+  "devDependencies": { "@types/react": "^19.0.0", "@types/react-dom": "^19.0.0", "typescript": "~5.9.0" },
+  "repository": { "type": "git", "url": "git+https://github.com/yuxino-labs/web-shared.git" },
   "author": "yuxino <nbsawz@gmail.com>",
   "license": "MIT"
 }
