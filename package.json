@@ -1,6 +1,6 @@
 {
   "name": "web-shared",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": false,
   "description": "Shared web components, hooks and English-first IP-country language policy for yuxino projects",
   "type": "module",
@@ -16,6 +16,7 @@
       "default": "./runtime/region-language.js"
     }
   },
+  "typesVersions": { "*": { "region-language": ["src/region-language.ts"] } },
   "files": ["dist", "src", "runtime", "README.md", "docs/language-policy.md"],
   "scripts": {
     "build": "tsc -p tsconfig.json && node scripts/copy-assets.mjs && node scripts/build-region-runtime.mjs",

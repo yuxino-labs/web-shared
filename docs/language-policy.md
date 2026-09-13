@@ -1,6 +1,6 @@
 # Shared site language policy
 
-The single maintained implementation is `src/region-language.ts`, exposed as **`web-shared/region-language`** since package version 0.4.0. The subpath has no React runtime import, so React, Next.js and plain JavaScript sites use the same policy.
+The single maintained implementation is `src/region-language.ts`, exposed as **`web-shared/region-language`** since 0.4.0. Version 0.4.1 also supports legacy TypeScript `moduleResolution: node` without changing consumer compiler settings. The subpath has no React runtime import, so React, Next.js and plain JavaScript sites use the same policy.
 
 ## Contract
 
@@ -15,30 +15,29 @@ Country.is necessarily receives the visitor's network IP. Requests omit cookies 
 
 ## Consumer integration
 
-Depend on this repository's archive at a full immutable commit SHA; commit the package-manager-generated lockfile too. Do not use a floating `main` dependency or load executable code from a CDN at runtime. Archives include generated JavaScript under `runtime/`, so language-only consumers do not need a package prepare step. React peers are optional for this subpath; role-picker consumers still supply React and React DOM.
+Depend on this repository's archive at a full immutable commit SHA and commit the package-manager-generated lockfile. Do not use a floating `main` dependency or load executable code from a CDN at runtime. Archives include generated JavaScript under `runtime/`. npm can consume this subpath without a prepare step; pnpm may run preparation for GitHub-hosted archives, so approve only the exact reviewed archive through its existing `allowBuilds` policy. Never enable arbitrary dependency scripts. React peers are optional for this subpath; role-picker consumers still supply React and React DOM.
 
 ```ts
 import { startRegionLanguage } from 'web-shared/region-language';
 import type { RegionLanguage } from 'web-shared/region-language';
 
 const controller = startRegionLanguage((language: RegionLanguage) => {
-  // Update the site's existing rendering and metadata together.
-  render(language);
+  render(language); // Keep the site's existing rendering and metadata in sync.
 });
-// A custom language control may use controller.select('en').
+// Custom controls may call controller.select('en').
 // Call controller.dispose() when the owning application is destroyed.
 ```
 
-Existing local `src/region-language.ts` or `lib/region-language.ts` files may be thin re-export adapters only. They must contain no country whitelist, network request or preference logic. This keeps old imports and serialized prepaint bootstraps compatible without maintaining copied implementations.
+Existing local `src/region-language.ts` or `lib/region-language.ts` files may be thin re-export adapters only. They must contain no country whitelist, network request or preference logic. Old imports and serialized prepaint bootstraps remain compatible without copied implementations.
 
 The shared module owns policy, not page copy, routes or rendering. Sites retain their current translations and explicit language URLs. Neutral static entry points should also be prerendered in English; importing this package alone does not rewrite existing HTML.
 
 ## Updating safely
 
-Edit the TypeScript source here, run `npm run build:language` and `npm test`, and commit the generated runtime. Package releases bump the version. Consumers upgrade the pinned commit and lockfile deliberately, after their own tests and build pass.
+Edit the TypeScript source here, run `npm run build:language` and `npm test`, and commit the generated runtime. Consumers upgrade the pinned commit and lockfile deliberately, after their own tests and build pass.
 
-The reusable `.github/workflows/adopt-region-language.yml` and `scripts/adopt-region-language.mjs` migrate an existing compatible site on a `chore/shared-language-*` branch. The workflow uses only that repository's normal GitHub token, commits only the dependency, generated lockfile and adapter (plus the existing Doro Pages artifact when applicable), and never updates main. Merge or fast-forward only after validation succeeds. It does not need personal access tokens or deployment secrets.
+The reusable `.github/workflows/adopt-region-language.yml` and `scripts/adopt-region-language.mjs` migrate an existing compatible site on a `chore/shared-language-*` branch. The workflow uses only that repository's normal GitHub token and never updates main. It commits the dependency, generated lockfiles, any narrowly scoped pnpm build permission, and the adapter. Doro also rebuilds its existing checked-in Pages artifact. When npm and pnpm lockfiles coexist, both are updated and validation follows the existing npm production workflow. No deployment secret or personal access token is needed.
 
 ## Tests
 
-`npm test` runs source-level regression tests and tests through the real public package export. The consumer migration reruns the public-export test suite against the installed dependency before building the actual site. The package implementation remains self-contained for existing prepaint serialization.
+`npm test` tests the TypeScript source, real public JavaScript export, and legacy/modern TypeScript resolution. Consumer migration reruns the public-export suite against the installed dependency before the site's own tests, build and existing static-site checks. The policy function remains self-contained for prepaint serialization.
