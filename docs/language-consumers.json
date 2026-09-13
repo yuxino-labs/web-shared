@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "recordedOn": "2026-09-13",
+  "package": "web-shared",
+  "packageVersion": "0.4.1",
+  "packageRef": "ea39c2fcb1c521b097c9c04e6d6d52e4b68a9571",
+  "entry": "web-shared/region-language",
+  "validation": "Each migration ran the 35 public-export contract tests against the installed package, existing project tests where configured, and the full project build before generating its integration commit. All integration commits below were fast-forwarded to main without force.",
+  "scope": "This records dependency centralization and build validation, not a complete browser/geographic acceptance test or conversion of every legacy static homepage to English.",
+  "consumers": [
+    { "repository": "yuxino-labs/kiri-web", "adapter": "src/region-language.ts", "integrationCommit": "502d704b0cec16721e141e4b886e9915cac85606", "mainMerged": true, "deploymentWorkflow": "success", "deploymentRun": 34744866352 },
+    { "repository": "yuxino-labs/mimi-web", "adapter": "src/region-language.ts", "integrationCommit": "25c30ec7aced7f2919532573a91fca479ff12adc", "mainMerged": true, "deploymentWorkflow": "success", "deploymentRun": 34744701491 },
+    { "repository": "yuxino-labs/fuwa-web", "adapter": "src/region-language.ts", "integrationCommit": "595850284024709f43621f037d8ae169afa35c5c", "mainMerged": true, "deploymentWorkflow": "not_verified" },
+    { "repository": "yuxino-labs/tick-web", "adapter": "src/region-language.ts", "integrationCommit": "57cd4f1cfb56020c7f5c532b2319329886a5b9d2", "mainMerged": true, "deploymentWorkflow": "not_verified" },
+    { "repository": "yuxino-labs/viva-web", "adapter": "src/region-language.ts", "integrationCommit": "5d6439fe79ed1b782c59e901a8a8a0a11efc6d20", "mainMerged": true, "deploymentWorkflow": "not_verified" },
+    { "repository": "yuxino-labs/satori-web", "adapter": "src/region-language.ts", "integrationCommit": "a70688babcad950d52dc8ebeb9c9e43e762f94c9", "mainMerged": true, "deploymentWorkflow": "not_verified" },
+    { "repository": "yuxino-labs/meow-web", "adapter": "src/region-language.ts", "integrationCommit": "7ca814ba812d9b8d29431fa40506f88100b809dc", "mainMerged": true, "deploymentWorkflow": "success", "deploymentRun": 34744883400 },
+    { "repository": "yuxino-labs/index", "adapter": "src/region-language.ts", "integrationCommit": "83335a77f7f088418384cb7647ccc68d45fe5cbe", "mainMerged": true, "deploymentWorkflow": "success", "deploymentRun": 34744827311 },
+    { "repository": "yuxino-labs/ashita", "adapter": "lib/region-language.ts", "integrationCommit": "ead3ef0ea048c412646af59702730c84dff4a5ff", "mainMerged": true, "deploymentWorkflow": "success", "deploymentRun": 34744710717 },
+    { "repository": "yuxino/doro", "adapter": "src/region-language.ts", "integrationCommit": "1439030a499197a984b62c5407cc2fb8dc25f944", "mainMerged": true, "deploymentWorkflow": "success", "deploymentRun": 34744730661, "pagesArtifactRebuilt": true }
+  ]
+}
