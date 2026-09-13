@@ -28,16 +28,16 @@ writeFileSync(regionPath,
   '// Only this adapter remains locally so existing imports and static bootstraps keep working.\n' +
   'export { startRegionLanguage } from "web-shared/region-language";\n' +
   'export type { RegionLanguage, RegionLanguageOptions } from "web-shared/region-language";\n');
-// Match production when npm and pnpm lockfiles coexist; update both, not just one.
 const hasNpmLock = existsSync('package-lock.json');
 const hasPnpmLock = existsSync('pnpm-lock.yaml');
 const deployment = existsSync('.github/workflows/deploy.yml') ? readFileSync('.github/workflows/deploy.yml', 'utf8') : '';
-const npmProduction = /\bnpm (?:ci|install)\b/.test(deployment);
-let command = hasPnpmLock && !npmProduction ? 'pnpm' : 'npm';
+// A lockfile-selecting production script may contain npm as an unreachable fallback.
+const pnpmProduction = hasPnpmLock && /\bpnpm install\b/.test(deployment);
+const npmProduction = !pnpmProduction && /\bnpm (?:ci|install)\b/.test(deployment);
+const command = hasPnpmLock && !npmProduction ? 'pnpm' : 'npm';
 if (hasPnpmLock) {
   const workspaceFile = 'pnpm-workspace.yaml';
   let workspace = existsSync(workspaceFile) ? readFileSync(workspaceFile, 'utf8') : '';
-  // Limit permission to this immutable package, preserving every unrelated build rule.
   const permission = '  ' + JSON.stringify(`web-shared@${pkg.dependencies['web-shared']}`) + ': true\n';
   if (!workspace.includes(permission.trim())) {
     if (/^allowBuilds:[ \t]*(?:#[^\n]*)?$/m.test(workspace)) {
@@ -52,7 +52,6 @@ if (hasPnpmLock) {
   let version = /^pnpm@(\d+\.\d+\.\d+)/.exec(pkg.packageManager || '')?.[1]
     || pkg.devEngines?.packageManager?.version;
   if (!version && !pkg.packageManager) {
-    // Pin the already validated toolchain rather than whichever pnpm happens to be installed.
     version = '12.3.4';
     pkg.packageManager = `pnpm@${version}`;
     writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
@@ -62,7 +61,6 @@ if (hasPnpmLock) {
   run('pnpm', ['install', '--lockfile-only', '--ignore-scripts', '--no-frozen-lockfile']);
 }
 if (hasNpmLock || command === 'npm') {
-  // Never let a pnpm node_modules tree influence npm's production lockfile.
   rmSync(resolve(root, 'node_modules'), { recursive: true, force: true });
   run('npm', ['install', '--package-lock-only', '--ignore-scripts', '--no-audit', '--no-fund']);
 }
@@ -79,7 +77,6 @@ else if (pkg.devDependencies?.['vite-plus'] && ['tests', 'src'].some(dir => exis
 if (!pkg.scripts?.build) throw Error('No build command found');
 run(command, ['run', 'build']);
 if (existsSync('scripts/verify-site.py')) run('python3', ['scripts/verify-site.py']);
-// Doro Pages publishes checked-in docs. Rebuild that artifact too, retaining routing files.
 const pages = pkg.name === 'doro-viewer' && Boolean(pkg.scripts?.['build:pages']);
 if (pages) {
   const retained = ['docs/CNAME', 'docs/.nojekyll'].filter(existsSync).map(path => [path, readFileSync(path)]);

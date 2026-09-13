@@ -3,8 +3,13 @@ on:
   workflow_call:
     inputs:
       shared-ref:
-        description: Immutable web-shared commit
+        description: Immutable web-shared package commit
         required: true
+        type: string
+      tools-ref:
+        description: Optional immutable migration-tool commit, independent of the package version
+        required: false
+        default: ''
         type: string
 permissions:
   contents: write
@@ -24,11 +29,11 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
           node-version: '24'
-      - name: Read the pinned shared implementation and migration script
+      - name: Read the pinned migration tools
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: yuxino-labs/web-shared
-          ref: ${{ inputs.shared-ref }}
+          ref: ${{ inputs.tools-ref || inputs.shared-ref }}
           path: shared
           persist-credentials: false
       - name: Install, test and build before committing the migration
