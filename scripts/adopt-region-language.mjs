@@ -30,6 +30,20 @@ writeFileSync(regionPath,
   'export type { RegionLanguage, RegionLanguageOptions } from "web-shared/region-language";\n');
 let command = 'npm';
 if (existsSync('pnpm-lock.yaml')) {
+  // Trust only this reviewed immutable package, never all dependency build scripts.
+  const workspaceFile = 'pnpm-workspace.yaml';
+  let workspace = existsSync(workspaceFile) ? readFileSync(workspaceFile, 'utf8') : '';
+  const permission = '  ' + JSON.stringify(`web-shared@${pkg.dependencies['web-shared']}`) + ': true\n';
+  if (!workspace.includes(permission.trim())) {
+    if (/^allowBuilds:[ \t]*(?:#[^\n]*)?$/m.test(workspace)) {
+      workspace = workspace.replace(/^allowBuilds:[ \t]*(?:#[^\n]*)?$/m, match => match + '\n' + permission.trimEnd());
+    } else if (/^allowBuilds:[ \t]*\{[ \t]*\}[ \t]*$/m.test(workspace)) {
+      workspace = workspace.replace(/^allowBuilds:[ \t]*\{[ \t]*\}[ \t]*$/m, 'allowBuilds:\n' + permission.trimEnd());
+    } else if (/^allowBuilds:/m.test(workspace)) {
+      throw Error('Unexpected allowBuilds syntax; refusing to replace existing supply-chain policy');
+    } else workspace = workspace.trimEnd() + '\n\nallowBuilds:\n' + permission;
+    writeFileSync(workspaceFile, workspace);
+  }
   const version = /^pnpm@(\d+\.\d+\.\d+)/.exec(pkg.packageManager || '')?.[1]
     || pkg.devEngines?.packageManager?.version;
   if (!/^\d+\.\d+\.\d+$/.test(version || '')) throw Error('Cannot determine the project-pinned pnpm version');
@@ -60,7 +74,7 @@ if (pages) {
   run(command, ['run', 'build:pages']);
   for (const [path, bytes] of retained) { mkdirSync(dirname(path), { recursive: true }); writeFileSync(path, bytes); }
 }
-const files = ['package.json', regionPath, 'package-lock.json', 'pnpm-lock.yaml'].filter(existsSync);
+const files = ['package.json', regionPath, 'package-lock.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml'].filter(existsSync);
 if (pages) files.push('docs');
 run('git', ['add', '--', ...files]);
 const changed = execFileSync('git', ['diff', '--cached', '--name-only'], { encoding: 'utf8' }).trim();
